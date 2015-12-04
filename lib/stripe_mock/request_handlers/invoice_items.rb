@@ -13,6 +13,12 @@ module StripeMock
       def new_invoice_item(route, method_url, params, headers)
         params[:id] ||= new_id('ii')
         invoice_items[params[:id]] = Data.mock_invoice_item(params)
+
+        if params[:invoice]
+          invoice = assert_existence :invoice, params[:invoice], invoices[params[:invoice]]
+          invoice[:lines][:data].push(invoice_items[params[:id]])
+          invoice[:lines][:total_count] += 1
+        end
       end
 
       def update_invoice_item(route, method_url, params, headers)
